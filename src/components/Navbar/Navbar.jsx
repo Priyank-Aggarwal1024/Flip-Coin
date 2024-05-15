@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { logo, sound, animation, cross } from '../../assets'
+import { logo, cross } from '../../assets'
 import '../../App.css'
 import { Link, useNavigate } from 'react-router-dom'
-import Lottie from 'lottie-react'
-
 
 function Navbar() {
 
@@ -87,9 +85,7 @@ function Navbar() {
                 <div className="hidden lg:flex items-center gap-2 w-[36%] justify-end">
                     <div className='btn1 bg-transparent rounded-sm border border-[#c4c0c8] px-8 w-[8rem] text-center'>Collections</div>
                     <div className='btn1 bg-transparent rounded-sm border border-[#c4c0c8] px-8 w-[8rem] text-center'>Presale</div>
-                    <div className="w-[1.5rem]">
-                        {<Lottie animationData={animation} loop={true} />}
-                    </div>
+                    
                 </div>
             </div>
             <div className="flex overflow-hidden z-[100]">
