@@ -1,5 +1,4 @@
-import logo from "./logo.png";
-import logo1 from "./logo1.png";
+import logo from "./logo.svg";
 import svg1 from "./svg1.svg";
 import svg2 from "./svg2.svg";
 import svg3 from "./svg3.svg";
@@ -15,7 +14,7 @@ import xIcon from "./xIcon.png";
 import discordIcon from "./discordIcon.png";
 import telegramIcon from "./telegramIcon.png";
 import vector from "./vector.svg";
-import tick from "./tick.png";
+import tick from "./Tick.svg";
 import mask from "./mask.svg";
 import mask1 from "./mask1.svg";
 import mountain from "./mountain.png";
@@ -52,8 +51,18 @@ import opera from './opera.svg'
 import safepal from './safepal.svg'
 import W from './W.svg'
 import mountainThumbnail from './mountainThumbnail.svg'
+import kazi from './kazi.svg'
+import reload from './Reload.svg'
+import plus from './plus.svg'
+import mlogo from './mlogo.svg'
+import nimbi from './nimbi.svg'
 
 export {
+  nimbi,
+  mlogo,
+  reload,
+  plus,
+  kazi,
   mountainThumbnail,
   W,
   wallet98,
@@ -86,7 +95,6 @@ export {
   flash,
   cross,
   logo,
-  logo1,
   svg1,
   svg2,
   svg3,
