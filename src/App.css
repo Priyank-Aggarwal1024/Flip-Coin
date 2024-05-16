@@ -17,7 +17,8 @@ body {
   background-color: #2e3a41;
   border-radius: 0.5rem;
   padding: 0.125rem 0.25rem;
-  border:0.25rem solid transparent
+  border:0.25rem solid transparent;
+  cursor: pointer;
 }
 
 .slippage.active{
@@ -55,10 +56,10 @@ nav a.active {
   border: 1px solid transparent;
 } */
 
-/* .btn:hover {
+.btn:hover {
   background-color: #242d32;
   border: 1px solid #c4c0c8;
-} */
+}
 
 .navbar.active {
   transform: translateX(0);
