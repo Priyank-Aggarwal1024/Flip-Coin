@@ -69,6 +69,10 @@ nav a.active {
   transform: translateX(0)
 }
 
+.fixed{
+  position: fixed;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 12px;
