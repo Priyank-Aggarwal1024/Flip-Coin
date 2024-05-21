@@ -9,11 +9,12 @@ function Wallet() {
 
   const [data, setData] = useState([{ src: polygon, name: 'matic' }, { src: xrp, name: 'xrp' }, { src: doge, name: 'doge' }, { src: usdc, name: 'usdc' }, { src: ada, name: 'ada' }, { src: btc, name: 'btc' }, { src: icp, name: 'icp' }, { src: shibh, name: 'shib' }, { src: stx, name: 'stx' }, { src: avax, name: 'avax' }, { src: bnb, name: 'bnb' }, { src: atom, name: 'atom' }, { src: wbtc, name: 'wbtc' }, { src: uni, name: 'uni' }, { src: sch, name: 'sch' }, { src: ethereum, name: 'eth' }, { src: polygon, name: 'matic' }, { src: xrp, name: 'xrp' }, { src: doge, name: 'doge' }, { src: usdc, name: 'usdc' }, { src: ada, name: 'ada' }, { src: btc, name: 'btc' }, { src: icp, name: 'icp' }, { src: shibh, name: 'shib' }, { src: stx, name: 'stx' }, { src: avax, name: 'avax' }, { src: bnb, name: 'bnb' }, { src: atom, name: 'atom' }, { src: wbtc, name: 'wbtc' }, { src: uni, name: 'uni' }, { src: sch, name: 'sch' }, { src: ethereum, name: 'eth' },])
   const [walletData, setWalletData] = useState([{ src: wallet98, name: '98 wallet' }, { src: binance, name: 'binance' }, { src: tp, name: 'tp wallet' }, { src: metamask, name: 'metamask' }, { src: coinbase, name: 'coinbase' }, { src: trust, name: 'trust' }, { src: blockto, name: 'blockto' }, { src: brave, name: 'brave' }, { src: math, name: 'math' }, { src: opera, name: 'opera' }, { src: safepal, name: 'safepal' }, { src: W, name: 'Wallet Connect' },])
+
   const [connected, setConnected] = useState(false)
   const [cryptoData, setCryptoData] = useState([])
   const [loading, setLoading] = useState(true)
 
-  let newCryptoData = [{ src: stx, name: 'stacks', symbol: 'stx', amount: 458.2, token: 0.0025 }, { src: xrp, name: 'ripple', symbol: 'xrp', amount: 458.2, token: 0.058 }, { src: doge, name: 'Dogecoin', symbol: 'doge', amount: 458.2, token: 0.0025 }, { src: icp, name: 'internet computer protocol', symbol: 'icp', amount: 458.2, token: 0.0025 }, { src: avax, name: 'avalanche', symbol: 'avax', amount: 0.002, token: 0.0025 }, { src: wbtc, name: 'Wrapper Bitcoin', symbol: 'wbtc', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 },]
+  let newCryptoData = [{ src: stx, name: 'stacks', symbol: 'stx', amount: 458.2, token: 0.0025 }, { src: xrp, name: 'ripple', symbol: 'xrp', amount: 458.2, token: 0.058 }, { src: doge, name: 'Dogecoin', symbol: 'doge', amount: 458.2, token: 0.0025 }, { src: icp, name: 'internet computer protocol', symbol: 'icp', amount: 458.2, token: 0.0025 }, { src: avax, name: 'avalanche', symbol: 'avax', amount: 0.002, token: 0.0025 }, { src: wbtc, name: 'Wrapper Bitcoin', symbol: 'wbtc', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 },]
 
   const activateNavbar = () => {
 
@@ -21,7 +22,6 @@ function Wallet() {
 
     setTimeout(() => {
       document.querySelector("nav").style.position = "static"
-
     }, 200)
 
   }
@@ -72,7 +72,14 @@ function Wallet() {
 
   const toggleWalletBalance = () => {
     setTimeout(() => setShowWalletBalance(!showWalletBalance), 100);
-    document.querySelector('.walletBalance').style.display = document.querySelector('.walletBalance').style.display === 'flex' ? 'none' : 'flex'
+    const walletBalance =document.querySelector('.walletBalance')
+    walletBalance.style.display = 'flex'
+    walletBalance.addEventListener('click',(e)=>{
+      if(!document.querySelector('.walletModal').contains(e.target)){        
+        walletBalance.style.display = 'none'
+      }
+    })
+
   };
 
   const handleOutsideClick = (e) => {
@@ -111,22 +118,21 @@ function Wallet() {
     }
   };
 
-
   return (
     <div className='capitalize relative'>
 
       <div className="fixed w-full">
-        <nav className='lg:w-[80%] 2xl:w-[1504px] mx-auto border-b border-b-[#5c666c] bg-[#242d32] z-50 '>
+        <nav className='lg:w-[80%] 3xl:w-[1504px] mx-auto border-b border-b-[#5c666c] bg-[#242d32] z-50 '>
           <div className="nav flex items-center justify-between w-full mx-auto px-4 z-40">
 
             <button onClick={activateNavbar} id="navbar-toggler" className="hidden text-xl py-[0.9rem] text-white"  >☰</button>
 
             <div className="lg:w-[10%]">
               <div onClick={() => { navigate("/") }}>
-                <div className="hidden md:block sm:w-[7rem] h-[2.5rem] cursor-pointer">
+                <div className="hidden xs:block sm:w-[7rem] h-[2.5rem] cursor-pointer">
                   <img src={logo} className="w-full h-full object-fill" alt="" />
                 </div>
-                <div className="md:hidden sm:w-[7rem] h-[2.5rem] cursor-pointer">
+                <div className="xs:hidden sm:w-[7rem] h-[2.5rem] cursor-pointer">
                   <img src={mlogo} className="w-full h-full object-fill" alt="" />
                 </div>
               </div>
@@ -154,50 +160,52 @@ function Wallet() {
                     <p className='px-1'>Connected</p>
                   </div>
                 }
-              </div>
-              <div className="walletBalance hidden flex-col gap-3 w-[284px] absolute right-0 top-20 bg-[#242d32] border border-[#5c666c] p-3.5 rounded-[4px]">
-                <div className="flex items-center justify-between border-b pb-3 border-b-[#5c666c]">
-                  <div className="flex items-center gap-2">
-                    <div className="w-4 h-4">
-                      <img src={tick} className='w-full h-full object-cover' alt="" />
+                <div className="walletBalance hidden w-screen h-screen fixed top-0 left-0">
+                  <div className="walletModal flex flex-col gap-3 w-[284px] absolute right-[4.75%] lg:right-[11%] top-20 bg-[#242d32] border border-[#5c666c] p-3.5 rounded-[4px]">
+                    <div className="flex items-center justify-between border-b pb-3 border-b-[#5c666c]">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4">
+                          <img src={tick} className='w-full h-full object-cover' alt="" />
+                        </div>
+                        <p className='text-[#a1a7aa] text-xs'>nimbithebest.xtsyvd</p>
+                      </div>
+                      <p className='text-[#a1a7aa] text-xs'>Exit</p>
                     </div>
-                    <p className='text-[#a1a7aa] text-xs'>nimbithebest.xtsyvd</p>
-                  </div>
-                  <p className='text-[#a1a7aa] text-xs'>Exit</p>
-                </div>
-                <div className="flex items-center justify-between border-b pb-3 border-b-[#5c666c]">
-                  <p className='font-semibold text-xs'>Rank</p>
-                  <p className='text-[#ed8700] text-xs'>VIP Wolfpack</p>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6">
-                      <img src={kazi} alt="" className='w-full h-full object-cover' />
+                    <div className="flex items-center justify-between border-b pb-3 border-b-[#5c666c]">
+                      <p className='font-semibold text-xs'>Rank</p>
+                      <p className='text-[#ed8700] text-xs'>VIP Wolfpack</p>
                     </div>
-                    <p className='font-semibold text-xs'>KAZI</p>
-                  </div>
-                  <p className='text-sm'>40.0222</p>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6">
-                      <img src={nimbi} alt="" className='w-full h-full object-cover' />
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6">
+                          <img src={kazi} alt="" className='w-full h-full object-cover' />
+                        </div>
+                        <p className='font-semibold text-xs'>KAZI</p>
+                      </div>
+                      <p className='text-sm'>40.0222</p>
                     </div>
-                    <p className='font-semibold text-xs'>NIMBI</p>
-                  </div>
-                  <p className='text-sm'>75.0236</p>
-                </div>
-                <p className='font-bold text-xs uppercase'>nimbi wolfpack</p>
-                <button className='btn w-full text-base text-center rounded-md'>
-                  <p className='font-["Inter",sans-serif] font-medium text-sm'>access cdc</p>
-                </button>
-                <button className='btn w-full text-base text-center rounded-md'>
-                  <p className='font-["Inter",sans-serif] font-medium text-sm'>open lottery</p>
-                </button>
-                <button className='btn w-full text-base text-center rounded-md'>
-                  <p className='font-["Inter",sans-serif] font-medium text-sm'>dust runner game</p>
-                </button>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6">
+                          <img src={nimbi} alt="" className='w-full h-full object-cover' />
+                        </div>
+                        <p className='font-semibold text-xs'>NIMBI</p>
+                      </div>
+                      <p className='text-sm'>75.0236</p>
+                    </div>
+                    <p className='font-bold text-xs uppercase'>nimbi wolfpack</p>
+                    <button className='btn w-full text-base text-center rounded-md'>
+                      <p className='font-["Inter",sans-serif] font-medium text-sm'>access cdc</p>
+                    </button>
+                    <button className='btn w-full text-base text-center rounded-md'>
+                      <p className='font-["Inter",sans-serif] font-medium text-sm'>open lottery</p>
+                    </button>
+                    <button className='btn w-full text-base text-center rounded-md'>
+                      <p className='font-["Inter",sans-serif] font-medium text-sm'>dust runner game</p>
+                    </button>
 
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -262,7 +270,7 @@ function Wallet() {
 
                 {
                   walletData?.map((wData, index) => (
-                    <div onClick={handleClick} key={index} className="flex flex-col gap-1 items-center text-center">
+                    <div onClick={handleClick} key={index} className="cursor-pointer flex flex-col gap-1 items-center text-center">
                       <div className="w-[2.185rem] h-[2.185rem] rounded-[4px] overflow-hidden">
                         <img src={wData.src} className='w-full h-full object-cover' alt="" />
                       </div>
@@ -285,20 +293,20 @@ function Wallet() {
 
               <div className="bg-[#2e3a41] border border-[#5c666c] flex flex-col gap-2.5 rounded-md font-['Inter'] w-full max-h-[703px] px-4 py-3.5">
 
-                <div onClick={selectAll} className="cursor-pointer flex items-center justify-end gap-2 w-[91%]">
+                <div onClick={selectAll} className="cursor-pointer flex items-center justify-end gap-2 h-9 w-[91%]">
                   <p className='text-sm'>select all</p>
                   <div className="w-4 h-4">
                     <img src={plus} alt="" />
                   </div>
                 </div>
 
-                <div className=" bg-[#242d32] rounded-[4px] w-full md:w-[432px] pl-2 pr-1 py-2.5 h-[419px]">
-                  <div className="h-[401px] overflow-y-auto pr-1">
+                <div className=" bg-[#242d32] rounded-[4px] w-full md:w-[432px] pl-2 pr-1 py-2.5 h-[371px]">
+                  <div className="h-[355px] overflow-y-auto pr-1">
                     <div className="flex flex-col items-center w-full gap-[4px] overflow-y-auto">
                       {
                         cryptoData.length > 0 && !loading &&
                         cryptoData?.map((crypto, index) => (
-                          <div key={index} className="flex w-full h-[41px] gap-2 items-center rounded-[4px] justify-between text-center px-3 py-1 bg-[#2e3a41]">
+                          <div key={index} className="flex w-full h-[47px] gap-2 items-center rounded-[4px] justify-between text-center px-3 py-1 bg-[#2e3a41]">
                             <div className="flex items-center gap-2">
                               <div className="w-[1.5rem] h-[1.5rem]">
                                 <img src={crypto.src} className='w-full h-full object-cover' alt="" />
@@ -318,19 +326,19 @@ function Wallet() {
                         ))
                       }
                     </div>
-                  {
-                    cryptoData.length === 0 && !loading &&
-                    <div className="flex h-full justify-center items-center">
-                      <p className='text-[#a1a7aa] text-sm'>There are no tokens available</p>
-                    </div>
-                  }
-                  {
-                    loading &&
-                    <div className="flex flex-col h-full justify-center items-center">
-                      <p className='border-8 rounded-[50%] border-[#334047] animate-spin border-t-[#00ACE6] w-12 h-12'></p>
-                      <p className='pt-2 text-sm'>Loading Tokens...</p>
-                    </div>
-                  }
+                    {
+                      cryptoData.length === 0 && !loading &&
+                      <div className="flex h-full justify-center items-center">
+                        <p className='text-[#a1a7aa] text-sm'>There are no tokens available</p>
+                      </div>
+                    }
+                    {
+                      loading &&
+                      <div className="flex flex-col h-full justify-center items-center">
+                        <p className='border-8 rounded-[50%] border-[#334047] animate-spin border-t-[#00ACE6] w-12 h-12'></p>
+                        <p className='pt-2 text-sm'>Loading Tokens...</p>
+                      </div>
+                    }
 
                   </div>
 
