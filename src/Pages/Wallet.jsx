@@ -9,13 +9,11 @@ function Wallet() {
 
   const [data, setData] = useState([{ src: polygon, name: 'matic' }, { src: xrp, name: 'xrp' }, { src: doge, name: 'doge' }, { src: usdc, name: 'usdc' }, { src: ada, name: 'ada' }, { src: btc, name: 'btc' }, { src: icp, name: 'icp' }, { src: shibh, name: 'shib' }, { src: stx, name: 'stx' }, { src: avax, name: 'avax' }, { src: bnb, name: 'bnb' }, { src: atom, name: 'atom' }, { src: wbtc, name: 'wbtc' }, { src: uni, name: 'uni' }, { src: sch, name: 'sch' }, { src: ethereum, name: 'eth' }, { src: polygon, name: 'matic' }, { src: xrp, name: 'xrp' }, { src: doge, name: 'doge' }, { src: usdc, name: 'usdc' }, { src: ada, name: 'ada' }, { src: btc, name: 'btc' }, { src: icp, name: 'icp' }, { src: shibh, name: 'shib' }, { src: stx, name: 'stx' }, { src: avax, name: 'avax' }, { src: bnb, name: 'bnb' }, { src: atom, name: 'atom' }, { src: wbtc, name: 'wbtc' }, { src: uni, name: 'uni' }, { src: sch, name: 'sch' }, { src: ethereum, name: 'eth' },])
   const [walletData, setWalletData] = useState([{ src: wallet98, name: '98 wallet' }, { src: binance, name: 'binance' }, { src: tp, name: 'tp wallet' }, { src: metamask, name: 'metamask' }, { src: coinbase, name: 'coinbase' }, { src: trust, name: 'trust' }, { src: blockto, name: 'blockto' }, { src: brave, name: 'brave' }, { src: math, name: 'math' }, { src: opera, name: 'opera' }, { src: safepal, name: 'safepal' }, { src: W, name: 'Wallet Connect' },])
+  const [cryptoData, setCryptoData] = useState()
 
   const [connected, setConnected] = useState(false)
-  const [cryptoData, setCryptoData] = useState([])
   const [selectedCrypto, setSelectedCrypto] = useState([])
   const [loading, setLoading] = useState(true)
-
-  let newCryptoData = [{ src: stx, name: 'stacks', symbol: 'stx', amount: 458.2, token: 0.0025 }, { src: xrp, name: 'ripple', symbol: 'xrp', amount: 458.2, token: 0.058 }, { src: doge, name: 'Dogecoin', symbol: 'doge', amount: 458.2, token: 0.0025 }, { src: icp, name: 'internet computer protocol', symbol: 'icp', amount: 458.2, token: 0.0025 }, { src: avax, name: 'avalanche', symbol: 'avax', amount: 0.002, token: 0.0025 }, { src: wbtc, name: 'Wrapper Bitcoin', symbol: 'wbtc', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 },]
 
   const addSelectedCrypto = (crypto) => {
     let newSelectedCrypto = selectedCrypto.filter((data, index) => data === crypto)[0]
@@ -81,7 +79,7 @@ function Wallet() {
   }
 
   const selectAll = () => {
-    cryptoData.length !== 0 ? setCryptoData([]) : setCryptoData(newCryptoData)
+
   }
 
   const [showWalletBalance, setShowWalletBalance] = useState(false);
@@ -97,6 +95,15 @@ function Wallet() {
     })
 
   };
+
+  useEffect(() => {
+    let timeout = () => setCryptoData([{ src: stx, name: 'stacks', symbol: 'stx', amount: 458.2, token: 0.0025 }, { src: xrp, name: 'ripple', symbol: 'xrp', amount: 458.2, token: 0.058 }, { src: doge, name: 'Dogecoin', symbol: 'doge', amount: 458.2, token: 0.0025 }, { src: icp, name: 'internet computer protocol', symbol: 'icp', amount: 458.2, token: 0.0025 }, { src: avax, name: 'avalanche', symbol: 'avax', amount: 0.002, token: 0.0025 }, { src: wbtc, name: 'Wrapper Bitcoin', symbol: 'wbtc', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 },])
+    
+    setTimeout(timeout,5000)
+
+    return ()=> clearTimeout(timeout)
+    
+  }, [loading])
 
   return (
     <div className='capitalize relative'>
@@ -287,7 +294,7 @@ function Wallet() {
                   <div className="h-[355px] overflow-y-auto pr-1">
                     <div className="flex flex-col items-center w-full gap-[4px] overflow-y-auto">
                       {
-                        cryptoData.length > 0 && !loading &&
+                        cryptoData?.length > 0 && !loading &&
                         cryptoData?.map((crypto, index) => (
                           <label key={index} className="flex w-full h-[47px] gap-2 items-center rounded-[4px] justify-between text-center px-3 py-1 bg-[#2e3a41]">
                             <div className="flex items-center gap-2">
@@ -295,7 +302,7 @@ function Wallet() {
                                 <img src={crypto.src} className='w-full h-full object-cover' alt="" />
                               </div>
                               <div className="flex flex-col text-left">
-                                <p className='text-xs'><span className='font-bold uppercase'>{crypto.symbol}</span> <span className='capitalize text-[#a1a7aa]'>{crypto.name.length > 8 ? crypto.name.slice(0, 6) + '...' : crypto.name}</span></p>
+                                <p className='text-xs'><span className='font-bold uppercase'>{crypto.symbol}</span> <span className='capitalize text-[#a1a7aa]'>{crypto.name?.length > 13 ? crypto.name.slice(0, 8) + '...' : crypto.name}</span></p>
                                 <p className='text-[10px]'>{crypto.amount > 0.01 ? crypto.amount.toFixed(3) : '<0.01'}</p>
                               </div>
                             </div>
@@ -311,7 +318,7 @@ function Wallet() {
                       }
                     </div>
                     {
-                      cryptoData.length === 0 && !loading &&
+                      cryptoData?.length === 0 && !loading &&
                       <div className="flex h-full justify-center items-center">
                         <p className='text-[#a1a7aa] text-sm'>There are no tokens available</p>
                       </div>
