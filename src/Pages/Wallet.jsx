@@ -79,7 +79,10 @@ function Wallet() {
   }
 
   const selectAll = () => {
-
+    setSelectedCrypto(cryptoData)
+    document.querySelectorAll('.wallet input[type="checkbox"]').forEach(cryp => {
+      cryp.checked = document.querySelector('#selectAll').checked ? true : false
+    })
   }
 
   const [showWalletBalance, setShowWalletBalance] = useState(false);
@@ -98,11 +101,11 @@ function Wallet() {
 
   useEffect(() => {
     let timeout = () => setCryptoData([{ src: stx, name: 'stacks', symbol: 'stx', amount: 458.2, token: 0.0025 }, { src: xrp, name: 'ripple', symbol: 'xrp', amount: 458.2, token: 0.058 }, { src: doge, name: 'Dogecoin', symbol: 'doge', amount: 458.2, token: 0.0025 }, { src: icp, name: 'internet computer protocol', symbol: 'icp', amount: 458.2, token: 0.0025 }, { src: avax, name: 'avalanche', symbol: 'avax', amount: 0.002, token: 0.0025 }, { src: wbtc, name: 'Wrapper Bitcoin', symbol: 'wbtc', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 },])
-    
-    setTimeout(timeout,5000)
 
-    return ()=> clearTimeout(timeout)
-    
+    setTimeout(timeout, 2000)
+
+    return () => clearTimeout(timeout)
+
   }, [loading])
 
   return (
@@ -292,7 +295,7 @@ function Wallet() {
 
                 <div className=" bg-[#242d32] rounded-[4px] w-full md:w-[432px] pl-2 pr-1 py-2.5 h-[371px]">
                   <div className="h-[355px] overflow-y-auto pr-1">
-                    <div className="flex flex-col items-center w-full gap-[4px] overflow-y-auto">
+                    <div className="wallet flex flex-col items-center w-full gap-[4px] overflow-y-auto">
                       {
                         cryptoData?.length > 0 && !loading &&
                         cryptoData?.map((crypto, index) => (
