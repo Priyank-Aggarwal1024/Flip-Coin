@@ -89,3 +89,39 @@ nav a.active {
 ::-webkit-scrollbar-thumb:hover {
   background-color: #1c2327;
 }
+
+.main input[type=checkbox] {
+  visibility: hidden;
+}
+
+.checkbox-container {
+  /* position: absolute; */
+  top: -2px;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  background-color: transparent;
+  border: 1px solid #5c666c;
+  border-radius: 0.125rem;
+}
+
+.main input:checked~.checkbox-container {
+  background-color: #00ACE6;
+}
+
+.checkbox-container::after {
+  content: "";
+  position: absolute;
+  display: none;
+  right: 4px;
+  top: 4px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.main input:checked~.checkbox-container::after {
+  display: block;
+}

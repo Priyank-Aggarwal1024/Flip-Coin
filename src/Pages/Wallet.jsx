@@ -12,9 +12,25 @@ function Wallet() {
 
   const [connected, setConnected] = useState(false)
   const [cryptoData, setCryptoData] = useState([])
+  const [selectedCrypto, setSelectedCrypto] = useState([])
   const [loading, setLoading] = useState(true)
 
   let newCryptoData = [{ src: stx, name: 'stacks', symbol: 'stx', amount: 458.2, token: 0.0025 }, { src: xrp, name: 'ripple', symbol: 'xrp', amount: 458.2, token: 0.058 }, { src: doge, name: 'Dogecoin', symbol: 'doge', amount: 458.2, token: 0.0025 }, { src: icp, name: 'internet computer protocol', symbol: 'icp', amount: 458.2, token: 0.0025 }, { src: avax, name: 'avalanche', symbol: 'avax', amount: 0.002, token: 0.0025 }, { src: wbtc, name: 'Wrapper Bitcoin', symbol: 'wbtc', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 },]
+
+  const addSelectedCrypto = (crypto) => {
+    let newSelectedCrypto = selectedCrypto.filter((data, index) => data === crypto)[0]
+
+    if (newSelectedCrypto) {
+      let i = selectedCrypto.indexOf(crypto);
+      if (i >= 0) {
+        newSelectedCrypto = selectedCrypto.splice(i, 1)
+        setSelectedCrypto(selectedCrypto)
+      }
+    }
+    else {
+      setSelectedCrypto(p => [...p, crypto])
+    }
+  }
 
   const activateNavbar = () => {
 
@@ -65,57 +81,21 @@ function Wallet() {
   }
 
   const selectAll = () => {
-    cryptoData.length === 0 ? setCryptoData(newCryptoData) : setCryptoData([])
+    cryptoData.length !== 0 ? setCryptoData([]) : setCryptoData(newCryptoData)
   }
 
   const [showWalletBalance, setShowWalletBalance] = useState(false);
 
   const toggleWalletBalance = () => {
     setTimeout(() => setShowWalletBalance(!showWalletBalance), 100);
-    const walletBalance =document.querySelector('.walletBalance')
+    const walletBalance = document.querySelector('.walletBalance')
     walletBalance.style.display = 'flex'
-    walletBalance.addEventListener('click',(e)=>{
-      if(!document.querySelector('.walletModal').contains(e.target)){        
+    walletBalance.addEventListener('click', (e) => {
+      if (!document.querySelector('.walletModal').contains(e.target)) {
         walletBalance.style.display = 'none'
       }
     })
 
-  };
-
-  const handleOutsideClick = (e) => {
-    if (showWalletBalance && !document.querySelector('.walletBalance').contains(e.target)) {
-      setShowWalletBalance(false);
-    }
-  };
-
-  // useEffect(() => {
-  //   if (showWalletBalance) {
-  //     document.addEventListener('click', handleOutsideClick);
-  //     console.log('hi')
-  //   } else {
-  //     document.removeEventListener('click', handleOutsideClick);
-  //     // console.log('hi')
-  //   }
-  //   return () => {
-  //     document.removeEventListener('click', handleOutsideClick);
-  //   };
-  // }, [showWalletBalance]);
-
-  const walletUpdate = () => {
-    const walletBalance = document.querySelector('.walletBalance');
-    if (walletBalance.style.display === 'flex') {
-      walletBalance.style.display = 'none';
-      // Add event listener after changing display to 'none'
-      const handleClickOutside = (e) => {
-        if (!walletBalance.contains(e.target)) {
-          walletBalance.style.display = 'none';
-          window.removeEventListener('click', handleClickOutside);
-        }
-      };
-      window.addEventListener('click', handleClickOutside);
-    } else {
-      walletBalance.style.display = 'flex';
-    }
   };
 
   return (
@@ -293,10 +273,13 @@ function Wallet() {
 
               <div className="bg-[#2e3a41] border border-[#5c666c] flex flex-col gap-2.5 rounded-md font-['Inter'] w-full max-h-[703px] px-4 py-3.5">
 
-                <div onClick={selectAll} className="cursor-pointer flex items-center justify-end gap-2 h-9 w-[91%]">
-                  <p className='text-sm'>select all</p>
-                  <div className="w-4 h-4">
-                    <img src={plus} alt="" />
+                <div className="flex items-center justify-end h-9 w-[91%]">
+                  <div className="flex items-center justify-end cursor-pointer">
+                    <label className="main relative flex items-center cursor-pointer">
+                      <p className='text-sm'>select all</p>
+                      <input type="checkbox" id='selectAll' onChange={selectAll} />
+                      <span className="checkbox-container cursor-pointer"></span>
+                    </label>
                   </div>
                 </div>
 
@@ -306,7 +289,7 @@ function Wallet() {
                       {
                         cryptoData.length > 0 && !loading &&
                         cryptoData?.map((crypto, index) => (
-                          <div key={index} className="flex w-full h-[47px] gap-2 items-center rounded-[4px] justify-between text-center px-3 py-1 bg-[#2e3a41]">
+                          <label key={index} className="flex w-full h-[47px] gap-2 items-center rounded-[4px] justify-between text-center px-3 py-1 bg-[#2e3a41]">
                             <div className="flex items-center gap-2">
                               <div className="w-[1.5rem] h-[1.5rem]">
                                 <img src={crypto.src} className='w-full h-full object-cover' alt="" />
@@ -318,11 +301,12 @@ function Wallet() {
                             </div>
                             <div className="flex items-center gap-3">
                               <p className='text-[#a1a7aa] text-sm'>{crypto.token} KAZI</p>
-                              <div className="w-6 h-6">
-                                <img src={index < 3 ? cross : plus} alt="" />
+                              <div className="main relative flex items-center cursor-pointer">
+                                <input type="checkbox" onChange={() => addSelectedCrypto(crypto)} />
+                                <span className="checkbox-container after:right-1 after:top-[2.5px] cursor-pointer"></span>
                               </div>
                             </div>
-                          </div>
+                          </label>
                         ))
                       }
                     </div>
