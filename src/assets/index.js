@@ -2,12 +2,6 @@ import logo from "./logo.svg";
 import svg1 from "./svg1.svg";
 import svg2 from "./svg2.svg";
 import svg3 from "./svg3.svg";
-import sec1 from "./sec1.png";
-import sec2 from "./sec2.png";
-import discord from "./discord.png";
-import telegram from "./telegram.png";
-import x from "./x.png";
-import github from "./github.png";
 import icon from "./Icon.svg";
 import twitterIcon from "./twitterIcon.png";
 import xIcon from "./xIcon.png";
@@ -17,9 +11,6 @@ import vector from "./vector.svg";
 import tick from "./Tick.svg";
 import mask from "./mask.svg";
 import mask1 from "./mask1.svg";
-import mountain from "./mountain.png";
-import mountain1 from "./mountain.svg";
-import round from "./round.png";
 import cross from "./cross.svg";
 import xrp from './xrp.svg'
 import wbtc from './wbtc.svg'
@@ -61,6 +52,8 @@ export {
   nimbi,
   mlogo,
   reload,
+  tick,
+  cross,
   plus,
   kazi,
   mountainThumbnail,
@@ -93,23 +86,12 @@ export {
   wbtc,
   xrp,
   flash,
-  cross,
   logo,
   svg1,
   svg2,
   svg3,
-  round,
-  tick,
-  mountain,
-  mountain1,
   mask,
   mask1,
-  sec1,
-  sec2,
-  discord,
-  telegram,
-  x,
-  github,
   icon,
   telegramIcon,
   twitterIcon,

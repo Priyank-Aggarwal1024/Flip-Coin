@@ -145,7 +145,7 @@ function Wallet() {
                   connected &&
                   <div onClick={toggleWalletBalance} className='btn1 bg-transparent rounded-[4px] border border-[#5c666c] px-2 py-1.5  text-sm flex items-center gap-1'>
                     <div className="w-4 h-4">
-                      <img src={tick} alt="" className='w-full h-full object-cover' />
+                      {/* <img src={tick} alt="" className='w-full h-full object-cover' /> */}
                     </div>
                     <p className='px-1'>Connected</p>
                   </div>
@@ -305,7 +305,8 @@ function Wallet() {
                                 <img src={crypto.src} className='w-full h-full object-cover' alt="" />
                               </div>
                               <div className="flex flex-col text-left">
-                                <p className='text-xs'><span className='font-bold uppercase'>{crypto.symbol}</span> <span className='capitalize text-[#a1a7aa]'>{crypto.name?.length > 13 ? crypto.name.slice(0, 8) + '...' : crypto.name}</span></p>
+                                <p className='text-xs xs:block hidden'><span className='font-bold uppercase'>{crypto.symbol}</span> <span className='capitalize text-[#a1a7aa]'>{crypto.name}</span></p>
+                                <p className='text-xs block xs:hidden'><span className='font-bold uppercase'>{crypto.symbol}</span> <span className='capitalize text-[#a1a7aa]'>{crypto.name?.length > 13 ? crypto.name.slice(0, 8) + '...' : crypto.name}</span></p>
                                 <p className='text-[10px]'>{crypto.amount > 0.01 ? crypto.amount.toFixed(3) : '<0.01'}</p>
                               </div>
                             </div>
