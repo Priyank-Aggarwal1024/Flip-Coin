@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react'
 import { W, ada, atom, avax, binance, blockto, bnb, brave, btc, coinbase, cross, discordIcon, doge, ethereum, flash, icp, kazi, logo, math, metamask, mlogo, nimbi, opera, plus, polygon, reload, safepal, sch, shibh, stx, telegramIcon, tick, tp, trust, twitterIcon, uni, usdc, wallet98, wbtc, xIcon, xrp } from '../assets'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
-import { createWeb3Modal, defaultConfig ,useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers5/react'
+import { createWeb3Modal, defaultConfig, useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers5/react'
 import { ethers } from 'ethers'
 import kaziABI from '../utils/KAZI.json'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setAlertMessage, setLoginState, setUserBalance, setWalletAddress } from '../store/slice'
 
 const kaziAddress = import.meta.env.VITE_KAZI_TOKEN_ADDRESS
@@ -64,17 +64,32 @@ function Wallet() {
 
   const [data, setData] = useState([{ src: polygon, name: 'matic' }, { src: xrp, name: 'xrp' }, { src: doge, name: 'doge' }, { src: usdc, name: 'usdc' }, { src: ada, name: 'ada' }, { src: btc, name: 'btc' }, { src: icp, name: 'icp' }, { src: shibh, name: 'shib' }, { src: stx, name: 'stx' }, { src: avax, name: 'avax' }, { src: bnb, name: 'bnb' }, { src: atom, name: 'atom' }, { src: wbtc, name: 'wbtc' }, { src: uni, name: 'uni' }, { src: sch, name: 'sch' }, { src: ethereum, name: 'eth' }, { src: polygon, name: 'matic' }, { src: xrp, name: 'xrp' }, { src: doge, name: 'doge' }, { src: usdc, name: 'usdc' }, { src: ada, name: 'ada' }, { src: btc, name: 'btc' }, { src: icp, name: 'icp' }, { src: shibh, name: 'shib' }, { src: stx, name: 'stx' }, { src: avax, name: 'avax' }, { src: bnb, name: 'bnb' }, { src: atom, name: 'atom' }, { src: wbtc, name: 'wbtc' }, { src: uni, name: 'uni' }, { src: sch, name: 'sch' }, { src: ethereum, name: 'eth' },])
   const [walletData, setWalletData] = useState([{ src: wallet98, name: '98 wallet' }, { src: binance, name: 'binance' }, { src: tp, name: 'tp wallet' }, { src: metamask, name: 'metamask' }, { src: coinbase, name: 'coinbase' }, { src: trust, name: 'trust' }, { src: blockto, name: 'blockto' }, { src: brave, name: 'brave' }, { src: math, name: 'math' }, { src: opera, name: 'opera' }, { src: safepal, name: 'safepal' }, { src: W, name: 'Wallet Connect' },])
-  const [cryptoData, setCryptoData] = useState()
   const [connected, setConnected] = useState(false)
+  const [userCryptoData, setUserCryptoData] = useState([])
   const [selectedCrypto, setSelectedCrypto] = useState([])
   const [loading, setLoading] = useState(true)
-  
+
   const dispatch = useDispatch()
-  
+  const userBalance = useSelector(state => state.userBalance)
+  const walletAddress = useSelector(state => state.walletAddress)
+
   const { open, provider } = useWeb3Modal()
   const { address, isConnected } = useWeb3ModalAccount()
   const { walletProvider } = useWeb3ModalProvider()
-  
+
+  const ERC20_ABI = [
+    "function balanceOf(address owner) view returns (uint256)",
+    "function decimals() view returns (uint8)",
+    "function name() view returns (string)",
+    "function symbol() view returns (string)"
+  ];
+
+  const tokenAddresses = [
+    "0xe9A8B11d3C40E6e1538663D4015180DCb284856d",
+    "0xA999DF13eEb23B48dEEe9D0CA740c92613A4755D",
+    "0xF23eb28f29F2b572aEc43280E28a69B290388812"
+  ];
+
   const addSelectedCrypto = (crypto) => {
     let newSelectedCrypto = selectedCrypto.filter((data, index) => data === crypto)[0]
 
@@ -118,31 +133,53 @@ function Wallet() {
     document.querySelector('.connectModal').style.display = 'none'
   }
 
-  const handleClick =async () => {
-    // document.querySelector('.connectModal').style.display = 'none'
-    // setConnected(true)
-    // setTimeout(() => setLoading(false), 1000)
+  const handleClick = async () => {
     if (typeof window.ethereum !== 'undefined') {
       try {
         setLoading(true)
+
         if (isConnected) {
           const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
           const signer = ethersProvider.getSigner()
           const walletAddress = await signer.getAddress();
+
           dispatch(setWalletAddress(walletAddress))
+
           const contract = new ethers.Contract(kaziAddress, kaziABI, signer)
           const balance = await contract.balanceOf(address)
           const decimals = await contract.decimals()
 
-          console.log(balance)
+          dispatch(setUserBalance(balance / Math.pow(10, decimals)))
 
+          const tokenBalances = await Promise.all(tokenAddresses.map(async (tokenAddress) => {
+            const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, signer);
+            const [balance, decimals, name, symbol] = await Promise.all([
+              tokenContract.balanceOf(walletAddress),
+              tokenContract.decimals(),
+              tokenContract.name(),
+              tokenContract.symbol()
+            ]);
+
+            return {
+              tokenAddress,
+              name,
+              balance: balance / Math.pow(10, decimals),
+              symbol
+            };
+          }));
+
+          setUserCryptoData(tokenBalances);
+
+          document.querySelector('.connectModal').style.display = 'none'
+          setConnected(true)
           dispatch(setLoginState(true))
         } else {
           await open()
+          setTimeout(() => dispatch(setAlertMessage({})), 1200)
         }
         setLoading(false)
       } catch (error) {
-        dispatch(setAlertMessage({ message: 'Error connecting to MetaMask or fetching balance', type: 'alert' }))
+        dispatch(setAlertMessage({ message: 'Error connecting to MetaMask', type: 'alert' }))
         setTimeout(() => dispatch(setAlertMessage({})), 1200)
         setLoading(false)
       }
@@ -152,10 +189,55 @@ function Wallet() {
     }
   }
 
-  const convert = () => {
-    setConnected(false)
-    document.querySelector('.walletBalance').style.display = 'none'
-    setLoading(true)
+  console.log(selectedCrypto)
+
+  const approveTokens = async () => {
+    for (let i = 0; i < userCryptoData.length; i++) {
+      if (userCryptoData[i] !== '') {
+        const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
+        const signer = ethersProvider.getSigner()
+
+        const tokenContract = new ethers.Contract(kaziAddress,ERC20_ABI, signer)
+        const amount = userCryptoData[i].balance;
+        try {
+          await tokenContract.methods.approve(kaziAddress, amount).send({ from: walletAddress });
+          console.log(`Approved ${amount} of token ${userCryptoData[i]}`);
+        } catch (error) {
+          console.error(`Error approving token ${userCryptoData[i]}, error`);
+        }
+      }
+    }
+  };
+
+  const convert = async () => {
+    try {
+      try {
+        await approveTokens();
+
+        // let tokens = [], balances = [];
+        // selectedCrypto.forEach((crypto, i) => {
+        //   tokens[i] = crypto.tokenAddress;
+        //   balances[i] = 1000
+        // })
+
+        // const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
+        // const signer = ethersProvider.getSigner()
+
+        // const contract = new ethers.Contract(kaziAddress, kaziABI, signer)
+
+        // await contract.methods.mintWithDust(tokens, balances).send({
+        //   from: walletAddress,
+        //   value: web3.utils.toWei('1', 'ether')
+        // });
+        console.log('Tokens minted successfully');
+      } catch (error) {
+        console.error('Error minting tokens', error);
+      }
+
+    }
+    catch (err) {
+      console.log(err)
+    }
   }
 
   const updateSlippage = (e) => {
@@ -167,7 +249,7 @@ function Wallet() {
   }
 
   const selectAll = () => {
-    setSelectedCrypto(cryptoData)
+    setSelectedCrypto(userCryptoData)
     document.querySelectorAll('.wallet input[type="checkbox"]').forEach(cryp => {
       cryp.checked = document.querySelector('#selectAll').checked ? true : false
     })
@@ -187,20 +269,20 @@ function Wallet() {
 
   };
 
-  useEffect(() => {
-    let timeout = () => setCryptoData([{ src: stx, name: 'stacks', symbol: 'stx', amount: 458.2, token: 0.0025 }, { src: xrp, name: 'ripple', symbol: 'xrp', amount: 458.2, token: 0.058 }, { src: doge, name: 'Dogecoin', symbol: 'doge', amount: 458.2, token: 0.0025 }, { src: icp, name: 'internet computer protocol', symbol: 'icp', amount: 458.2, token: 0.0025 }, { src: avax, name: 'avalanche', symbol: 'avax', amount: 0.002, token: 0.0025 }, { src: wbtc, name: 'Wrapper Bitcoin', symbol: 'wbtc', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 }, { src: uni, name: 'uniswap', symbol: 'uni', amount: 458.2, token: 0.0025 },])
+  // useEffect(() => {
+  //   let timeout = () => setUserCryptoData([])
 
-    setTimeout(timeout, 2000)
+  //   setTimeout(timeout, 2000)
 
-    return () => clearTimeout(timeout)
+  //   return () => clearTimeout(timeout)
 
-  }, [loading])
+  // }, [loading])
 
   return (
     <div className='capitalize relative'>
 
-      <div className="fixed w-full">
-        <nav className='lg:w-[80%] 3xl:w-[1504px] mx-auto border-b border-b-[#5c666c] bg-[#242d32] z-50 '>
+      <div className="fixed w-full z-50">
+        <nav className='lg:w-[80%] 3xl:w-[1504px] mx-auto border-b border-b-[#5c666c] bg-[#242d32]'>
           <div className="nav flex items-center justify-between w-full mx-auto px-4 z-40">
 
             <button onClick={activateNavbar} id="navbar-toggler" className="hidden text-xl py-[0.9rem] text-white"  >☰</button>
@@ -260,7 +342,7 @@ function Wallet() {
                         </div>
                         <p className='font-semibold text-xs'>KAZI</p>
                       </div>
-                      <p className='text-sm'>40.0222</p>
+                      <p className='text-sm'>{userBalance}</p>
                     </div>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -291,7 +373,7 @@ function Wallet() {
         </nav>
       </div>
 
-      <div className="flex flex-col justify-between  bg-[url(./assets/mountain.png)] bg-bottom bg-cover min-h-screen bg-no-repeat">
+      <div className="flex z-0 flex-col justify-between  bg-[url(./assets/mountain.png)] bg-bottom bg-cover min-h-screen bg-no-repeat">
 
         <div className="flex flex-col items-center gap-11 w-full px-[1rem] md:px-[5rem] xl:px-[11rem] mx-auto capitalize py-[6rem] font-['Roboto_Condensed',sans-serif]">
 
@@ -331,7 +413,7 @@ function Wallet() {
             </div>
           }
 
-          <div className="connectModal fixed top-0 backdrop-blur-[3px] h-screen w-screen z-[100] hidden justify-center ">
+          <div className="connectModal fixed top-0 backdrop-blur-[3px] h-screen w-screen z- hidden justify-center ">
             <div className="modal bg-[#2e3a41] mt-[25vh] 3xl:mt-64 flex flex-col w-[20.75rem] h-[21.75rem] border border-[#5c666c] px-4 py-3.5 rounded-[4px]">
               <div className="flex justify-between items-center border-b border-b-[#5c666c] pb-3">
                 <div className="flex gap-2 items-center">
@@ -363,7 +445,7 @@ function Wallet() {
 
           {
             connected &&
-            <div className='font-["Inter"] w-full md:w-[464px] flex flex-col gap-1.5'>
+            <div className='font-["Inter"] -z-0 w-full md:w-[464px] flex flex-col gap-1.5'>
               <div className="bg-[#2e3a41] border border-[#5c666c] flex flex-col rounded-md w-full px-4 py-3.5">
                 <p className='font-semibold text-sm'>Welcome</p>
                 <p className='capitalize text-[#a1a7aa] text-xs'>nimbithebest.xtsyvd</p>
@@ -385,8 +467,8 @@ function Wallet() {
                   <div className="h-[355px] overflow-y-auto pr-1">
                     <div className="wallet flex flex-col items-center w-full gap-[4px] overflow-y-auto">
                       {
-                        cryptoData?.length > 0 && !loading &&
-                        cryptoData?.map((crypto, index) => (
+                        userCryptoData?.length > 0 && !loading &&
+                        userCryptoData?.map((crypto, index) => (
                           <label key={index} className="flex w-full h-[47px] gap-2 items-center rounded-[4px] justify-between text-center px-3 py-1 bg-[#2e3a41]">
                             <div className="flex items-center gap-2">
                               <div className="w-[1.5rem] h-[1.5rem]">
@@ -395,7 +477,7 @@ function Wallet() {
                               <div className="flex flex-col text-left">
                                 <p className='text-xs xs:block hidden'><span className='font-bold uppercase'>{crypto.symbol}</span> <span className='capitalize text-[#a1a7aa]'>{crypto.name}</span></p>
                                 <p className='text-xs block xs:hidden'><span className='font-bold uppercase'>{crypto.symbol}</span> <span className='capitalize text-[#a1a7aa]'>{crypto.name?.length > 13 ? crypto.name.slice(0, 8) + '...' : crypto.name}</span></p>
-                                <p className='text-[10px]'>{crypto.amount > 0.01 ? crypto.amount.toFixed(3) : '<0.01'}</p>
+                                <p className='text-[10px]'>{crypto.balance > 0.01 ? crypto.balance.toFixed(3) : '<0.01'}</p>
                               </div>
                             </div>
                             <div className="flex items-center gap-3">
@@ -410,7 +492,7 @@ function Wallet() {
                       }
                     </div>
                     {
-                      cryptoData?.length === 0 && !loading &&
+                      userCryptoData?.length === 0 && !loading &&
                       <div className="flex h-full justify-center items-center">
                         <p className='text-[#a1a7aa] text-sm'>There are no tokens available</p>
                       </div>
