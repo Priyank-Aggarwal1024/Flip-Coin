@@ -2,6 +2,61 @@ import React, { useEffect, useState } from 'react'
 import { W, ada, atom, avax, binance, blockto, bnb, brave, btc, coinbase, cross, discordIcon, doge, ethereum, flash, icp, kazi, logo, math, metamask, mlogo, nimbi, opera, plus, polygon, reload, safepal, sch, shibh, stx, telegramIcon, tick, tp, trust, twitterIcon, uni, usdc, wallet98, wbtc, xIcon, xrp } from '../assets'
 import '../App.css'
 import { useNavigate } from 'react-router-dom'
+import { createWeb3Modal, defaultConfig ,useWeb3Modal, useWeb3ModalAccount, useWeb3ModalProvider } from '@web3modal/ethers5/react'
+import { ethers } from 'ethers'
+import kaziABI from '../utils/KAZI.json'
+import { useDispatch } from 'react-redux'
+import { setAlertMessage, setLoginState, setUserBalance, setWalletAddress } from '../store/slice'
+
+const kaziAddress = import.meta.env.VITE_KAZI_TOKEN_ADDRESS
+
+// 1. Get projectId
+const projectId = '29fa5b8dbe55e7aaa7a0ef6baa46156b'
+
+// 2. Set chains
+const mainnet = {
+  chainId: 1,
+  name: 'Ethereum',
+  currency: 'ETH',
+  explorerUrl: 'https://etherscan.io',
+  rpcUrl: 'https://cloudflare-eth.com'
+}
+const sepolia = {
+  chainId: 11155111,
+  name: 'Sepolia',
+  currency: 'ETH',
+  explorerUrl: 'https://sepolia.etherscan.io',
+  rpcUrl: 'https://rpc.sepolia.org',
+};
+
+// 3. Create a metadata object
+const metadata = {
+  name: 'My Website',
+  description: 'My Website description',
+  url: 'https://mywebsite.com', // origin must match your domain & subdomain
+  icons: ['https://avatars.mywebsite.com/']
+}
+
+// 4. Create Ethers config
+const ethersConfig = defaultConfig({
+  /*Required*/
+  metadata,
+
+  /*Optional*/
+  enableEIP6963: true, // true by default
+  enableInjected: true, // true by default
+  enableCoinbase: true, // true by default
+  rpcUrl: '...', // used for the Coinbase SDK
+  defaultChainId: 1 // used for the Coinbase SDK
+})
+
+// 5. Create a Web3Modal instance
+createWeb3Modal({
+  ethersConfig,
+  chains: [mainnet, sepolia],
+  projectId,
+  enableAnalytics: true // Optional - defaults to your Cloud configuration
+})
 
 function Wallet() {
 
@@ -10,11 +65,16 @@ function Wallet() {
   const [data, setData] = useState([{ src: polygon, name: 'matic' }, { src: xrp, name: 'xrp' }, { src: doge, name: 'doge' }, { src: usdc, name: 'usdc' }, { src: ada, name: 'ada' }, { src: btc, name: 'btc' }, { src: icp, name: 'icp' }, { src: shibh, name: 'shib' }, { src: stx, name: 'stx' }, { src: avax, name: 'avax' }, { src: bnb, name: 'bnb' }, { src: atom, name: 'atom' }, { src: wbtc, name: 'wbtc' }, { src: uni, name: 'uni' }, { src: sch, name: 'sch' }, { src: ethereum, name: 'eth' }, { src: polygon, name: 'matic' }, { src: xrp, name: 'xrp' }, { src: doge, name: 'doge' }, { src: usdc, name: 'usdc' }, { src: ada, name: 'ada' }, { src: btc, name: 'btc' }, { src: icp, name: 'icp' }, { src: shibh, name: 'shib' }, { src: stx, name: 'stx' }, { src: avax, name: 'avax' }, { src: bnb, name: 'bnb' }, { src: atom, name: 'atom' }, { src: wbtc, name: 'wbtc' }, { src: uni, name: 'uni' }, { src: sch, name: 'sch' }, { src: ethereum, name: 'eth' },])
   const [walletData, setWalletData] = useState([{ src: wallet98, name: '98 wallet' }, { src: binance, name: 'binance' }, { src: tp, name: 'tp wallet' }, { src: metamask, name: 'metamask' }, { src: coinbase, name: 'coinbase' }, { src: trust, name: 'trust' }, { src: blockto, name: 'blockto' }, { src: brave, name: 'brave' }, { src: math, name: 'math' }, { src: opera, name: 'opera' }, { src: safepal, name: 'safepal' }, { src: W, name: 'Wallet Connect' },])
   const [cryptoData, setCryptoData] = useState()
-
   const [connected, setConnected] = useState(false)
   const [selectedCrypto, setSelectedCrypto] = useState([])
   const [loading, setLoading] = useState(true)
-
+  
+  const dispatch = useDispatch()
+  
+  const { open, provider } = useWeb3Modal()
+  const { address, isConnected } = useWeb3ModalAccount()
+  const { walletProvider } = useWeb3ModalProvider()
+  
   const addSelectedCrypto = (crypto) => {
     let newSelectedCrypto = selectedCrypto.filter((data, index) => data === crypto)[0]
 
@@ -58,10 +118,38 @@ function Wallet() {
     document.querySelector('.connectModal').style.display = 'none'
   }
 
-  const handleClick = () => {
-    document.querySelector('.connectModal').style.display = 'none'
-    setConnected(true)
-    setTimeout(() => setLoading(false), 1000)
+  const handleClick =async () => {
+    // document.querySelector('.connectModal').style.display = 'none'
+    // setConnected(true)
+    // setTimeout(() => setLoading(false), 1000)
+    if (typeof window.ethereum !== 'undefined') {
+      try {
+        setLoading(true)
+        if (isConnected) {
+          const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
+          const signer = ethersProvider.getSigner()
+          const walletAddress = await signer.getAddress();
+          dispatch(setWalletAddress(walletAddress))
+          const contract = new ethers.Contract(kaziAddress, kaziABI, signer)
+          const balance = await contract.balanceOf(address)
+          const decimals = await contract.decimals()
+
+          console.log(balance)
+
+          dispatch(setLoginState(true))
+        } else {
+          await open()
+        }
+        setLoading(false)
+      } catch (error) {
+        dispatch(setAlertMessage({ message: 'Error connecting to MetaMask or fetching balance', type: 'alert' }))
+        setTimeout(() => dispatch(setAlertMessage({})), 1200)
+        setLoading(false)
+      }
+    } else {
+      dispatch(setAlertMessage({ message: 'MetaMask is not installed', type: 'alert' }))
+      setTimeout(() => dispatch(setAlertMessage({})), 1200)
+    }
   }
 
   const convert = () => {
