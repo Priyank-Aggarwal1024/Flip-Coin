@@ -201,7 +201,6 @@ function Wallet() {
       cryp.checked = document.querySelector('#selectAll').checked ? true : false;
     })
   }
-  console.log(selectedCrypto, userCryptoData)
 
   const updateSlippage = (e) => {
     document.querySelectorAll(".slippage").forEach(slip => {
