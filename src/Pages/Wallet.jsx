@@ -78,10 +78,90 @@ function Wallet() {
   const { walletProvider } = useWeb3ModalProvider()
 
   const ERC20_ABI = [
-    "function balanceOf(address owner) view returns (uint256)",
-    "function decimals() view returns (uint8)",
-    "function name() view returns (string)",
-    "function symbol() view returns (string)"
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "name": "balance",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_spender",
+          "type": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
   ];
 
   const tokenAddresses = [
@@ -91,18 +171,39 @@ function Wallet() {
   ];
 
   const addSelectedCrypto = (crypto) => {
-    let newSelectedCrypto = selectedCrypto.filter((data, index) => data === crypto)[0]
+    document.querySelector('#selectAll').checked = false;
+    // document.querySelectorAll('.wallet input[type="checkbox"]').forEach(cryp => {
+    //   cryp.checked = false
+    // })
+
+    let newSelectedCrypto = selectedCrypto.filter((data, index) => data.tokenAddress === crypto.tokenAddress)[0]
 
     if (newSelectedCrypto) {
       let i = selectedCrypto.indexOf(crypto);
       if (i >= 0) {
         newSelectedCrypto = selectedCrypto.splice(i, 1)
         setSelectedCrypto([...selectedCrypto])
+        console.log(userCryptoData)
       }
     }
     else {
       setSelectedCrypto(p => [...p, crypto])
     }
+  }
+
+  const updateSlippage = (e) => {
+    document.querySelectorAll(".slippage").forEach(slip => {
+      slip.classList.remove('active')
+    })
+
+    e.target.classList.add('active')
+  }
+
+  const selectAll = () => {
+    setSelectedCrypto(p => document.querySelector('#selectAll').checked ? userCryptoData : [])
+    document.querySelectorAll('.wallet input[type="checkbox"]').forEach(cryp => {
+      cryp.checked = document.querySelector('#selectAll').checked ? true : false;
+    })
   }
 
   const activateNavbar = () => {
@@ -137,9 +238,9 @@ function Wallet() {
     if (typeof window.ethereum !== 'undefined') {
       try {
         setLoading(true)
-          await open()
+        setConnected(true)
 
-        // if (isConnected) {
+        if (isConnected) {
           const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
           const signer = ethersProvider.getSigner()
           const walletAddress = await signer.getAddress();
@@ -169,14 +270,15 @@ function Wallet() {
             };
           }));
 
-          setUserCryptoData(tokenBalances);
+          let userCryptos = tokenBalances.filter(data => data.balance >= 1)
+
+          setUserCryptoData(userCryptos);
 
           document.querySelector('.connectModal').style.display = 'none'
-          setConnected(true)
           dispatch(setLoginState(true))
-        // } else {
-        //   setTimeout(() => dispatch(setAlertMessage({})), 1200)
-        // }
+        } else {
+          await open()
+        }
         setLoading(false)
       } catch (error) {
         dispatch(setAlertMessage({ message: 'Error connecting to MetaMask', type: 'alert' }))
@@ -189,45 +291,48 @@ function Wallet() {
     }
   }
 
-  console.log(selectedCrypto)
+  console.log(selectedCrypto, userCryptoData)
 
   const approveTokens = async () => {
-    for (let i = 0; i < userCryptoData.length; i++) {
-        const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
-        const signer = ethersProvider.getSigner()
+    let converted = false;
+    for (let i = 0; i < selectedCrypto.length; i++) {
+      if (selectedCrypto[i] !== '') {
+        const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
+        const signer = ethersProvider.getSigner();
 
-        const tokenContract = new ethers.Contract(kaziAddress,kaziABI, signer)
-        const amount = userCryptoData[i].balance;
+        const tokenContract = new ethers.Contract(selectedCrypto[i].tokenAddress, ERC20_ABI, signer);
+        const decimals = await tokenContract.decimals();
+        const amount = ethers.utils.parseUnits(selectedCrypto[i].balance.toString(), decimals);
         try {
-          await tokenContract.methods.approve(kaziAddress, amount).send({ from: walletAddress });
-          console.log(`Approved ${amount} of token ${userCryptoData[i]}`);
+          await tokenContract.approve(kaziAddress, '1000000000000000000000');
+          dispatch(setAlertMessage({ message: `Approved ${amount} of token ${selectedCrypto[i].symbol}`, type: 'alert' }))
+          setTimeout(() => dispatch(setAlertMessage({})), 5000)
         } catch (error) {
-          console.error(`Error approving token ${userCryptoData[i]}, error`);
+          console.error(`Error approving token ${selectedCrypto[i].symbol}:`, error);
+          dispatch(setAlertMessage({ message: `Error approving token ${selectedCrypto[i].symbol}`, type: 'alert' }))
+          setTimeout(() => dispatch(setAlertMessage({})), 5000)
         }
       }
-    
-  };
+    }
+  }
 
   const convert = async () => {
     try {
       try {
         await approveTokens();
 
-        // let tokens = [], balances = [];
-        // selectedCrypto.forEach((crypto, i) => {
-        //   tokens[i] = crypto.tokenAddress;
-        //   balances[i] = 1000
-        // })
+        let tokens = [], balances = [];
+        selectedCrypto.forEach((crypto, i) => {
+          tokens[i] = crypto.tokenAddress;
+          balances[i] = '1000000000000000000000'
+        })
 
-        // const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
-        // const signer = ethersProvider.getSigner()
+        const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
+        const signer = ethersProvider.getSigner()
 
-        // const contract = new ethers.Contract(kaziAddress, kaziABI, signer)
+        const contract = new ethers.Contract(kaziAddress, kaziABI, signer)
 
-        // await contract.methods.mintWithDust(tokens, balances).send({
-        //   from: walletAddress,
-        //   value: web3.utils.toWei('1', 'ether')
-        // });
+        await contract.mintWithDust(tokens, balances);
         console.log('Tokens minted successfully');
       } catch (error) {
         console.error('Error minting tokens', error);
@@ -237,21 +342,6 @@ function Wallet() {
     catch (err) {
       console.log(err)
     }
-  }
-
-  const updateSlippage = (e) => {
-    document.querySelectorAll(".slippage").forEach(slip => {
-      slip.classList.remove('active')
-    })
-
-    e.target.classList.add('active')
-  }
-
-  const selectAll = () => {
-    setSelectedCrypto(p=>p.length!==userCryptoData.length?userCryptoData:[])
-    document.querySelectorAll('.wallet input[type="checkbox"]').forEach(cryp => {
-      cryp.checked = document.querySelector('#selectAll').checked ? true : false
-    })
   }
 
   const [showWalletBalance, setShowWalletBalance] = useState(false);
@@ -267,15 +357,6 @@ function Wallet() {
     })
 
   };
-
-  // useEffect(() => {
-  //   let timeout = () => setUserCryptoData([])
-
-  //   setTimeout(timeout, 2000)
-
-  //   return () => clearTimeout(timeout)
-
-  // }, [loading])
 
   return (
     <div className='capitalize relative'>
@@ -303,7 +384,7 @@ function Wallet() {
                 <p className='text-sm cursor-pointer hover:text-[#00ACE6] transition-all px-[1.05rem] py-3'>FAQ</p>
                 {
                   !connected &&
-                  <div onClick={connectModal} className='btn1 bg-transparent rounded-[4px] border border-[#5c666c] px-2 py-1.5  text-sm flex items-center gap-1'>
+                  <div onClick={handleClick} className='btn1 bg-transparent rounded-[4px] border border-[#5c666c] px-2 py-1.5  text-sm flex items-center gap-1'>
                     <div className="w-4 h-4">
                       <img src={flash} alt="" className='w-full h-full object-cover' />
                     </div>
@@ -403,7 +484,7 @@ function Wallet() {
 
               </div>
 
-              <button onClick={connectModal} className='btn w-full text-base text-center flex items-center gap-1 justify-center'>
+              <button onClick={handleClick} className='btn w-full text-base text-center flex items-center gap-1 justify-center'>
                 <div className="w-[1.5rem]">
                   <img src={flash} className='w-full h-full object-cover' alt="" />
                 </div>
@@ -542,7 +623,7 @@ function Wallet() {
                       </div>
 
                     </div>
-                    <button onClick={convert} className='btn rounded-[4px] w-full text-base text-center flex items-center gap-2.5 justify-center'>
+                    <button onClick={convert} disabled={selectedCrypto.length === 0} className='btn rounded-[4px] w-full text-base text-center flex items-center gap-2.5 justify-center'>
                       <div className="w-[1.25rem] h-[1.25rm]">
                         <img src={reload} className='w-full h-full object-cover' alt="" />
                       </div>
