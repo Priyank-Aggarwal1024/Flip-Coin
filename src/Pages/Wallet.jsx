@@ -67,6 +67,7 @@ function Wallet() {
   const [connected, setConnected] = useState(false)
   const [userCryptoData, setUserCryptoData] = useState([])
   const [selectedCrypto, setSelectedCrypto] = useState([])
+  const [isConverting, setIsConverting] = useState(false)
   const [loading, setLoading] = useState(true)
 
   const dispatch = useDispatch()
@@ -293,62 +294,102 @@ function Wallet() {
   // console.log(selectedCrypto, userCryptoData)
 
   const approveTokens = async () => {
-    let newSelectedCrypto = []
+    let newSelectedCrypto = [];
     for (let i = 0; i < selectedCrypto.length; i++) {
       if (selectedCrypto[i] !== '') {
         const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
         const signer = ethersProvider.getSigner();
 
         const tokenContract = new ethers.Contract(selectedCrypto[i].tokenAddress, ERC20_ABI, signer);
-        const decimals = await tokenContract.decimals();
-        const amount = ethers.utils.parseUnits(selectedCrypto[i].balance.toString(), decimals);
+        const decimals = BigInt(selectedCrypto[i].decimals);
+        const balance = BigInt(selectedCrypto[i].balance);
+        const amount = balance > BigInt(10000) ? BigInt(10000) * (BigInt(10) ** decimals) : balance * (BigInt(10) ** decimals);
+
         try {
-
-          await tokenContract.approve(kaziAddress, amount.toString());
-          newSelectedCrypto.push(selectedCrypto[i])
-          dispatch(setAlertMessage({ message: `Approved ${amount / 10**selectedCrypto[i].decimals} of token ${selectedCrypto[i].symbol}`, type: 'alert' }))
-          setTimeout(() => dispatch(setAlertMessage({})), 5000)
-
+          await tokenContract.approve(kaziAddress, amount.toString(), {
+            gasLimit: 2000000
+          });
+          newSelectedCrypto.push(selectedCrypto[i]);
+          dispatch(setAlertMessage({ message: `Approved ${amount / (BigInt(10) ** decimals)} of token ${selectedCrypto[i].symbol}`, type: 'alert' }));
+          setTimeout(() => dispatch(setAlertMessage({})), 5000);
         } catch (error) {
-
-          dispatch(setAlertMessage({ message: `Error approving token ${selectedCrypto[i].symbol}`, type: 'alert' }))
-          setTimeout(() => dispatch(setAlertMessage({})), 5000)
+          dispatch(setAlertMessage({ message: `Error approving token ${selectedCrypto[i].symbol}`, type: 'alert' }));
+          setTimeout(() => dispatch(setAlertMessage({})), 5000);
         }
       }
     }
-    setSelectedCrypto(newSelectedCrypto)
+    setSelectedCrypto(newSelectedCrypto);
     return newSelectedCrypto;
-  }
+  };
 
   const convert = async () => {
+    setIsConverting(true);
     let tokens = [], balances = [];
     try {
       const newSelectedCrypto = await approveTokens();
 
-      const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
-      const signer = ethersProvider.getSigner()
+      if (newSelectedCrypto.length > 0) {
 
-      newSelectedCrypto.forEach((crypto, i) => {
-        tokens[i] = crypto.tokenAddress;
-        balances[i] = (BigInt(crypto.balance.toString().replace('.', '')) * BigInt(10 ** (crypto.decimals - (crypto.balance.toString().split('.')[1]?.length || 0)))).toString()
-      })
+        const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
+        const signer = ethersProvider.getSigner();
 
-      console.log(tokens, balances)
-      const contract = new ethers.Contract(kaziAddress, kaziABI, signer)
+        newSelectedCrypto.forEach((crypto, i) => {
+          const decimals = BigInt(crypto.decimals);
+          const balance = BigInt(crypto.balance);
+          const amount = balance * (BigInt(10) ** decimals);
+          tokens[i] = crypto.tokenAddress;
+          balances[i] = balance > BigInt(10000) ? (BigInt(10000) * (BigInt(10) ** decimals)).toString() : amount.toString();
+        });
+        
+        const contract = new ethers.Contract(kaziAddress, kaziABI, signer);
 
-      await contract.mintWithDust(tokens, balances);
+        const tx = await contract.mintWithDust(tokens, balances, {
+          gasLimit: 6000000
+        });
 
-      dispatch(setAlertMessage({ message: `Tokens minted successfully`, type: 'alert' }));
-      setTimeout(() => dispatch(setAlertMessage({})), 5000);
+        await tx.wait();
+
+        const balance = await contract.balanceOf(address)
+        const decimals = await contract.decimals()
+
+        dispatch(setUserBalance(balance / Math.pow(10, decimals)))
+
+        const tokenBalances = await Promise.all(tokenAddresses.map(async (tokenAddress) => {
+          const tokenContract = new ethers.Contract(tokenAddress, ERC20_ABI, signer);
+          const [balance, decimals, name, symbol] = await Promise.all([
+            tokenContract.balanceOf(walletAddress),
+            tokenContract.decimals(),
+            tokenContract.name(),
+            tokenContract.symbol()
+          ]);
+
+          return {
+            tokenAddress,
+            name,
+            balance: Math.floor(balance / Math.pow(10, decimals)),
+            decimals,
+            symbol
+          };
+        }));
+
+        let userCryptos = tokenBalances.filter(data => data.balance >= 1)
+
+        setUserCryptoData(userCryptos);
+
+        dispatch(setAlertMessage({ message: `Tokens minted successfully`, type: 'alert' }));
+        setTimeout(() => dispatch(setAlertMessage({})), 5000);
+      }
+
+      setIsConverting(false);
 
     } catch (error) {
-
       dispatch(setAlertMessage({ message: `Error minting tokens`, type: 'alert' }));
       setTimeout(() => dispatch(setAlertMessage({})), 5000);
-      console.log(error)
+      console.log(error);
 
+      setIsConverting(false);
     }
-  }
+  };
 
   const [showWalletBalance, setShowWalletBalance] = useState(false);
 
@@ -613,8 +654,8 @@ function Wallet() {
                       <div className="flex items-center justify-between">
                         <p className=''>Minimum converted</p>
                         <div className="flex flex-col justify-end items-end text-right">
-                          <p className='font-medium'>0 KAZI</p>
-                          <p className='font-normal text-[10px] text-[#C0C4C6]'>{'>'} $0.01</p>
+                          <p className='font-medium'>{selectedCrypto.length*10000} KAZI</p>
+                          <p className='font-normal text-[10px] text-[#C0C4C6]'>{'>'} ${0.01*selectedCrypto.length*10000}</p>
                         </div>
                       </div>
 
@@ -629,7 +670,7 @@ function Wallet() {
                       </div>
 
                     </div>
-                    <button onClick={convert} disabled={selectedCrypto.length === 0} className='btn rounded-[4px] w-full text-base text-center flex items-center gap-2.5 justify-center'>
+                    <button onClick={convert} disabled={selectedCrypto.length === 0 || isConverting} className='btn rounded-[4px] w-full text-base text-center flex items-center gap-2.5 justify-center'>
                       <div className="w-[1.25rem] h-[1.25rm]">
                         <img src={reload} className='w-full h-full object-cover' alt="" />
                       </div>
