@@ -183,7 +183,6 @@ function Wallet() {
       if (i >= 0) {
         newSelectedCrypto = selectedCrypto.splice(i, 1)
         setSelectedCrypto([...selectedCrypto])
-        console.log(userCryptoData)
       }
     }
     else {
@@ -207,13 +206,11 @@ function Wallet() {
   }
 
   const activateNavbar = () => {
-
     document.querySelector('.navbar').classList.add('active')
 
     setTimeout(() => {
       document.querySelector("nav").style.position = "static"
     }, 200)
-
   }
 
   const connectModal = (e) => {
@@ -264,7 +261,8 @@ function Wallet() {
             return {
               tokenAddress,
               name,
-              balance: balance / Math.pow(10, decimals),
+              balance: Math.floor(balance / Math.pow(10, decimals)),
+              decimals,
               symbol
             };
           }));
@@ -275,12 +273,12 @@ function Wallet() {
 
           document.querySelector('.connectModal').style.display = 'none'
           dispatch(setLoginState(true))
+          setConnected(true)
+          setTimeout(() => setLoading(false), 1000)
         } else {
           await open()
         }
-        
-        setConnected(true)
-        setTimeout(()=>setLoading(false),1000)
+
       } catch (error) {
         dispatch(setAlertMessage({ message: 'Error connecting to MetaMask', type: 'alert' }))
         setTimeout(() => dispatch(setAlertMessage({})), 1200)
@@ -292,10 +290,10 @@ function Wallet() {
     }
   }
 
-  console.log(selectedCrypto, userCryptoData)
+  // console.log(selectedCrypto, userCryptoData)
 
   const approveTokens = async () => {
-    let converted = false;
+    let newSelectedCrypto = []
     for (let i = 0; i < selectedCrypto.length; i++) {
       if (selectedCrypto[i] !== '') {
         const ethersProvider = new ethers.providers.Web3Provider(walletProvider);
@@ -305,43 +303,50 @@ function Wallet() {
         const decimals = await tokenContract.decimals();
         const amount = ethers.utils.parseUnits(selectedCrypto[i].balance.toString(), decimals);
         try {
-          await tokenContract.approve(kaziAddress, '1000000000000000000000');
-          dispatch(setAlertMessage({ message: `Approved ${amount/10**18} of token ${selectedCrypto[i].symbol}`, type: 'alert' }))
+
+          await tokenContract.approve(kaziAddress, amount.toString());
+          newSelectedCrypto.push(selectedCrypto[i])
+          dispatch(setAlertMessage({ message: `Approved ${amount / 10**selectedCrypto[i].decimals} of token ${selectedCrypto[i].symbol}`, type: 'alert' }))
           setTimeout(() => dispatch(setAlertMessage({})), 5000)
+
         } catch (error) {
-          console.error(`Error approving token ${selectedCrypto[i].symbol}:`, error);
+
           dispatch(setAlertMessage({ message: `Error approving token ${selectedCrypto[i].symbol}`, type: 'alert' }))
           setTimeout(() => dispatch(setAlertMessage({})), 5000)
         }
       }
     }
+    setSelectedCrypto(newSelectedCrypto)
+    return newSelectedCrypto;
   }
 
   const convert = async () => {
+    let tokens = [], balances = [];
     try {
-      try {
-        await approveTokens();
+      const newSelectedCrypto = await approveTokens();
 
-        let tokens = [], balances = [];
-        selectedCrypto.forEach((crypto, i) => {
-          tokens[i] = crypto.tokenAddress;
-          balances[i] = '1000000000000000000000'
-        })
+      const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
+      const signer = ethersProvider.getSigner()
 
-        const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
-        const signer = ethersProvider.getSigner()
+      newSelectedCrypto.forEach((crypto, i) => {
+        tokens[i] = crypto.tokenAddress;
+        balances[i] = (BigInt(crypto.balance.toString().replace('.', '')) * BigInt(10 ** (crypto.decimals - (crypto.balance.toString().split('.')[1]?.length || 0)))).toString()
+      })
 
-        const contract = new ethers.Contract(kaziAddress, kaziABI, signer)
+      console.log(tokens, balances)
+      const contract = new ethers.Contract(kaziAddress, kaziABI, signer)
 
-        await contract.mintWithDust(tokens, balances);
-        console.log('Tokens minted successfully');
-      } catch (error) {
-        console.error('Error minting tokens', error);
-      }
+      await contract.mintWithDust(tokens, balances);
 
-    }
-    catch (err) {
-      console.log(err)
+      dispatch(setAlertMessage({ message: `Tokens minted successfully`, type: 'alert' }));
+      setTimeout(() => dispatch(setAlertMessage({})), 5000);
+
+    } catch (error) {
+
+      dispatch(setAlertMessage({ message: `Error minting tokens`, type: 'alert' }));
+      setTimeout(() => dispatch(setAlertMessage({})), 5000);
+      console.log(error)
+
     }
   }
 
