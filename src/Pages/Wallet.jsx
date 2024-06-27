@@ -238,7 +238,6 @@ function Wallet() {
     if (typeof window.ethereum !== 'undefined') {
       try {
         setLoading(true)
-        setConnected(true)
 
         if (isConnected) {
           const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
@@ -279,7 +278,9 @@ function Wallet() {
         } else {
           await open()
         }
-        setLoading(false)
+        
+        setConnected(true)
+        setTimeout(()=>setLoading(false),1000)
       } catch (error) {
         dispatch(setAlertMessage({ message: 'Error connecting to MetaMask', type: 'alert' }))
         setTimeout(() => dispatch(setAlertMessage({})), 1200)
