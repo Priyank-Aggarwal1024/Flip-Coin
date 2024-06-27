@@ -172,10 +172,14 @@ function Wallet() {
   ];
 
   const addSelectedCrypto = (crypto) => {
-    document.querySelector('#selectAll').checked = false;
-    // document.querySelectorAll('.wallet input[type="checkbox"]').forEach(cryp => {
-    //   cryp.checked = false
-    // })
+    if (document.querySelector('#selectAll').checked) {
+      document.querySelectorAll('.wallet input[type="checkbox"]').forEach(cryp => {
+        cryp.id !== crypto.tokenAddress ? cryp.checked = false : cryp.checked = true
+      })
+      setSelectedCrypto([crypto])
+      document.querySelector('#selectAll').checked = false
+      return;
+    }
 
     let newSelectedCrypto = selectedCrypto.filter((data, index) => data.tokenAddress === crypto.tokenAddress)[0]
 
@@ -191,19 +195,20 @@ function Wallet() {
     }
   }
 
+  const selectAll = () => {
+    setSelectedCrypto(p => document.querySelector('#selectAll').checked ? userCryptoData : [])
+    document.querySelectorAll('.wallet input[type="checkbox"]').forEach(cryp => {
+      cryp.checked = document.querySelector('#selectAll').checked ? true : false;
+    })
+  }
+  console.log(selectedCrypto, userCryptoData)
+
   const updateSlippage = (e) => {
     document.querySelectorAll(".slippage").forEach(slip => {
       slip.classList.remove('active')
     })
 
     e.target.classList.add('active')
-  }
-
-  const selectAll = () => {
-    setSelectedCrypto(p => document.querySelector('#selectAll').checked ? userCryptoData : [])
-    document.querySelectorAll('.wallet input[type="checkbox"]').forEach(cryp => {
-      cryp.checked = document.querySelector('#selectAll').checked ? true : false;
-    })
   }
 
   const activateNavbar = () => {
@@ -291,8 +296,6 @@ function Wallet() {
     }
   }
 
-  // console.log(selectedCrypto, userCryptoData)
-
   const approveTokens = async () => {
     let newSelectedCrypto = [];
     for (let i = 0; i < selectedCrypto.length; i++) {
@@ -340,7 +343,7 @@ function Wallet() {
           tokens[i] = crypto.tokenAddress;
           balances[i] = balance > BigInt(10000) ? (BigInt(10000) * (BigInt(10) ** decimals)).toString() : amount.toString();
         });
-        
+
         const contract = new ethers.Contract(kaziAddress, kaziABI, signer);
 
         const tx = await contract.mintWithDust(tokens, balances, {
@@ -610,7 +613,7 @@ function Wallet() {
                             <div className="flex items-center gap-3">
                               <p className='text-[#a1a7aa] text-sm'>{crypto.token} KAZI</p>
                               <div className="main relative flex items-center cursor-pointer">
-                                <input type="checkbox" onChange={() => addSelectedCrypto(crypto)} />
+                                <input type="checkbox" id={crypto.tokenAddress} onChange={() => addSelectedCrypto(crypto)} />
                                 <span className="checkbox-container after:right-1 after:top-[2.5px] cursor-pointer"></span>
                               </div>
                             </div>
@@ -654,8 +657,8 @@ function Wallet() {
                       <div className="flex items-center justify-between">
                         <p className=''>Minimum converted</p>
                         <div className="flex flex-col justify-end items-end text-right">
-                          <p className='font-medium'>{selectedCrypto.length*10000} KAZI</p>
-                          <p className='font-normal text-[10px] text-[#C0C4C6]'>{'>'} ${0.01*selectedCrypto.length*10000}</p>
+                          <p className='font-medium'>{selectedCrypto.length * 10000} KAZI</p>
+                          <p className='font-normal text-[10px] text-[#C0C4C6]'>{'>'} ${0.01 * selectedCrypto.length * 10000}</p>
                         </div>
                       </div>
 
