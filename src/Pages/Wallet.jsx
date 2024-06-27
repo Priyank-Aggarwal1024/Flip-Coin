@@ -248,7 +248,7 @@ function Wallet() {
   }
 
   const selectAll = () => {
-    setSelectedCrypto(userCryptoData)
+    setSelectedCrypto(p=>p.length!==userCryptoData.length?userCryptoData:[])
     document.querySelectorAll('.wallet input[type="checkbox"]').forEach(cryp => {
       cryp.checked = document.querySelector('#selectAll').checked ? true : false
     })
