@@ -305,7 +305,7 @@ function Wallet() {
         const amount = ethers.utils.parseUnits(selectedCrypto[i].balance.toString(), decimals);
         try {
           await tokenContract.approve(kaziAddress, '1000000000000000000000');
-          dispatch(setAlertMessage({ message: `Approved ${amount} of token ${selectedCrypto[i].symbol}`, type: 'alert' }))
+          dispatch(setAlertMessage({ message: `Approved ${amount/10**18} of token ${selectedCrypto[i].symbol}`, type: 'alert' }))
           setTimeout(() => dispatch(setAlertMessage({})), 5000)
         } catch (error) {
           console.error(`Error approving token ${selectedCrypto[i].symbol}:`, error);
