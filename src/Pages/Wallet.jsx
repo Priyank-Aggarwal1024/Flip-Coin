@@ -97,7 +97,7 @@ function Wallet() {
       let i = selectedCrypto.indexOf(crypto);
       if (i >= 0) {
         newSelectedCrypto = selectedCrypto.splice(i, 1)
-        setSelectedCrypto(selectedCrypto)
+        setSelectedCrypto([...selectedCrypto])
       }
     }
     else {
@@ -137,8 +137,9 @@ function Wallet() {
     if (typeof window.ethereum !== 'undefined') {
       try {
         setLoading(true)
+          await open()
 
-        if (isConnected) {
+        // if (isConnected) {
           const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
           const signer = ethersProvider.getSigner()
           const walletAddress = await signer.getAddress();
@@ -173,10 +174,9 @@ function Wallet() {
           document.querySelector('.connectModal').style.display = 'none'
           setConnected(true)
           dispatch(setLoginState(true))
-        } else {
-          await open()
-          setTimeout(() => dispatch(setAlertMessage({})), 1200)
-        }
+        // } else {
+        //   setTimeout(() => dispatch(setAlertMessage({})), 1200)
+        // }
         setLoading(false)
       } catch (error) {
         dispatch(setAlertMessage({ message: 'Error connecting to MetaMask', type: 'alert' }))
@@ -193,11 +193,10 @@ function Wallet() {
 
   const approveTokens = async () => {
     for (let i = 0; i < userCryptoData.length; i++) {
-      if (userCryptoData[i] !== '') {
         const ethersProvider = new ethers.providers.Web3Provider(walletProvider)
         const signer = ethersProvider.getSigner()
 
-        const tokenContract = new ethers.Contract(kaziAddress,ERC20_ABI, signer)
+        const tokenContract = new ethers.Contract(kaziAddress,kaziABI, signer)
         const amount = userCryptoData[i].balance;
         try {
           await tokenContract.methods.approve(kaziAddress, amount).send({ from: walletAddress });
@@ -206,7 +205,7 @@ function Wallet() {
           console.error(`Error approving token ${userCryptoData[i]}, error`);
         }
       }
-    }
+    
   };
 
   const convert = async () => {
