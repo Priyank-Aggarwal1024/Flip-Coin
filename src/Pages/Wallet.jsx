@@ -444,11 +444,12 @@ function Wallet() {
                   connected &&
                   <div onClick={toggleWalletBalance} className='btn1 bg-transparent rounded-[4px] border border-[#5c666c] px-2 py-1.5  text-sm flex items-center gap-1'>
                     <div className="w-4 h-4">
-                      {/* <img src={tick} alt="" className='w-full h-full object-cover' /> */}
+                     <img src={tick} alt="" className='w-full h-full object-cover' />
                     </div>
                     <p className='px-1'>Connected</p>
                   </div>
                 }
+
                 <div className="walletBalance hidden w-screen h-screen fixed top-0 left-0">
                   <div className="walletModal flex flex-col gap-3 w-[284px] absolute right-[4.75%] lg:right-[11%] top-20 bg-[#242d32] border border-[#5c666c] p-3.5 rounded-[4px]">
                     <div className="flex items-center justify-between border-b pb-3 border-b-[#5c666c]">
@@ -482,8 +483,11 @@ function Wallet() {
                       </div>
                       <p className='text-sm'>75.0236</p>
                     </div>
-                    <p className='font-bold text-xs uppercase'>nimbi wolfpack</p>
-                    <button className='btn w-full text-base text-center rounded-md'>
+                    <button onClick={()=> { setConnected(false); document.querySelector('.walletBalance').style.display='none'}} className='btn w-full text-base text-center rounded-md'>
+                     <p className='font-["Inter",sans-serif] font-medium text-sm'>Disconnect</p>
+                   </button>
+                    {/* <p className='font-bold text-xs uppercase'>nimbi wolfpack</p>
+                     <button className='btn w-full text-base text-center rounded-md'>
                       <p className='font-["Inter",sans-serif] font-medium text-sm'>access cdc</p>
                     </button>
                     <button className='btn w-full text-base text-center rounded-md'>
@@ -491,7 +495,7 @@ function Wallet() {
                     </button>
                     <button className='btn w-full text-base text-center rounded-md'>
                       <p className='font-["Inter",sans-serif] font-medium text-sm'>dust runner game</p>
-                    </button>
+                    </button> */}
 
                   </div>
                 </div>
