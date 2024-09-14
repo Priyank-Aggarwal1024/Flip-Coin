@@ -1,17 +1,9 @@
 import logo from "./logo.svg";
-import svg1 from "./svg1.svg";
-import svg2 from "./svg2.svg";
-import svg3 from "./svg3.svg";
-import icon from "./Icon.svg";
 import discord from './discord.svg'
 import telegram from './telegram.svg'
 import insta from './instagram.svg'
 import xicon from './xicon.svg'
 import yt from './yt.svg'
-import vector from "./vector.svg";
-import tick from "./Tick.svg";
-import mask from "./mask.svg";
-import mask1 from "./mask1.svg";
 import cross from "./cross.svg";
 import xrp from './xrp.svg'
 import wbtc from './wbtc.svg'
@@ -54,11 +46,16 @@ import cryptocurrency from './cryptocurrency.svg'
 import wolf from './wolf.svg'
 import arrowBack from './arrow-back.svg'
 import coin from './coin.svg'
+import coinh from './coin-h.svg'
+import coint from './coin-t.svg'
+import circle from './circle.svg'
+import coingif from './coingif.gif'
+import cat from './cat.svg'
+import wincat from './wincat.svg'
 export {
   nimbi,
   mlogo,
   reload,
-  tick,
   cross,
   plus,
   kazi,
@@ -93,22 +90,21 @@ export {
   xrp,
   flash,
   logo,
-  svg1,
-  svg2,
-  svg3,
-  mask,
-  mask1,
-  icon,
   discord,
   telegram,
   insta,
   xicon,
   yt,
-  vector,
   cryptoDustLottery,
   yellowFlash,
   cryptocurrency,
   wolf,
   arrowBack,
-  coin
+  coin,
+  coinh,
+  coint,
+  circle,
+  coingif,
+  cat,
+  wincat
 };

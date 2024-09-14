@@ -198,6 +198,20 @@ nav a.active {
   overflow-x: hidden;
 }
 
+.game-text-grad {
+  background: var(--Gold-Kazi, linear-gradient(135deg, #D9CB00 15.04%, #FF8717 85.36%));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-family: Roboto;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 24px;
+  /* 133.333% */
+  text-transform: uppercase;
+}
+
 @media(width<768px) {
   .app-wolf {
     background: url("./assets/wolf-2.svg");
