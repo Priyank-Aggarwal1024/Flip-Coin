@@ -7,18 +7,22 @@ export default {
   theme: {
     extend: {},
     screens: {
-      'xs':'475px',
+      'xs': '475px',
       'sm': '640px',
-      'md': '769px',
+      'md': '736px',
       'lg': '1024px',
       'xlg': '1164px',
       'xl': '1280px',
       '2xl': '1536px',
-      '3xl':'1720px',
-      '4xl':'1900px',
-      '5xl':'2060px',
-      '6xl':'2200px',
-      '7xl':'2400px'
+      '3xl': '1720px',
+      '4xl': '1900px',
+      '5xl': '2060px',
+      '6xl': '2200px',
+      '7xl': '2400px'
+    },
+    fontFamily: {
+      "roboto": "Roboto, sans-serif",
+      "gothic": "Showcard Gothic"
     }
   },
   plugins: [],

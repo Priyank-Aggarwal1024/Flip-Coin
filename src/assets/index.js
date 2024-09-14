@@ -3,10 +3,11 @@ import svg1 from "./svg1.svg";
 import svg2 from "./svg2.svg";
 import svg3 from "./svg3.svg";
 import icon from "./Icon.svg";
-import twitterIcon from "./twitterIcon.png";
-import xIcon from "./xIcon.png";
-import discordIcon from "./discordIcon.png";
-import telegramIcon from "./telegramIcon.png";
+import discord from './discord.svg'
+import telegram from './telegram.svg'
+import insta from './instagram.svg'
+import xicon from './xicon.svg'
+import yt from './yt.svg'
 import vector from "./vector.svg";
 import tick from "./Tick.svg";
 import mask from "./mask.svg";
@@ -47,7 +48,12 @@ import reload from './Reload.svg'
 import plus from './plus.svg'
 import mlogo from './mlogo.svg'
 import nimbi from './nimbi.svg'
-
+import cryptoDustLottery from './cryptoDustLottery.svg'
+import yellowFlash from './yellow-flash.svg'
+import cryptocurrency from './cryptocurrency.svg'
+import wolf from './wolf.svg'
+import arrowBack from './arrow-back.svg'
+import coin from './coin.svg'
 export {
   nimbi,
   mlogo,
@@ -93,9 +99,16 @@ export {
   mask,
   mask1,
   icon,
-  telegramIcon,
-  twitterIcon,
-  xIcon,
-  discordIcon,
+  discord,
+  telegram,
+  insta,
+  xicon,
+  yt,
   vector,
+  cryptoDustLottery,
+  yellowFlash,
+  cryptocurrency,
+  wolf,
+  arrowBack,
+  coin
 };

@@ -1,5 +1,8 @@
 import Alert from "./Alert";
-
-export{
-    Alert
+import Footer from "./Footer";
+import Navbar from "./Navbar";
+export {
+    Alert,
+    Footer,
+    Navbar
 }

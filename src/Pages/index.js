@@ -1,5 +1,5 @@
-import Wallet from "./Wallet";
+import Home from "./Home";
 
 export {
-    Wallet,
+    Home
 }

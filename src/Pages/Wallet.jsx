@@ -1,3 +1,4 @@
+/*
 import React, { useEffect, useState } from 'react'
 import { W, ada, atom, avax, binance, blockto, bnb, brave, btc, coinbase, cross, discordIcon, doge, ethereum, flash, icp, kazi, logo, math, metamask, mlogo, nimbi, opera, plus, polygon, reload, safepal, sch, shibh, stx, telegramIcon, tick, tp, trust, twitterIcon, uni, usdc, wallet98, wbtc, xIcon, xrp } from '../assets'
 import '../App.css'
@@ -29,6 +30,7 @@ const sepolia = {
   rpcUrl: 'https://rpc.sepolia.org',
 };
 
+
 // 3. Create a metadata object
 const metadata = {
   name: 'My Website',
@@ -39,10 +41,8 @@ const metadata = {
 
 // 4. Create Ethers config
 const ethersConfig = defaultConfig({
-  /*Required*/
   metadata,
 
-  /*Optional*/
   enableEIP6963: true, // true by default
   enableInjected: true, // true by default
   enableCoinbase: true, // true by default
@@ -408,6 +408,7 @@ function Wallet() {
   };
 
   return (
+  
     <div className='capitalize relative'>
 
       <div className="fixed w-full z-50">
@@ -444,7 +445,7 @@ function Wallet() {
                   connected &&
                   <div onClick={toggleWalletBalance} className='btn1 bg-transparent rounded-[4px] border border-[#5c666c] px-2 py-1.5  text-sm flex items-center gap-1'>
                     <div className="w-4 h-4">
-                     <img src={tick} alt="" className='w-full h-full object-cover' />
+                      <img src={tick} alt="" className='w-full h-full object-cover' />
                     </div>
                     <p className='px-1'>Connected</p>
                   </div>
@@ -483,10 +484,10 @@ function Wallet() {
                       </div>
                       <p className='text-sm'>75.0236</p>
                     </div>
-                    <button onClick={()=> { setConnected(false); document.querySelector('.walletBalance').style.display='none'}} className='btn w-full text-base text-center rounded-md'>
-                     <p className='font-["Inter",sans-serif] font-medium text-sm'>Disconnect</p>
-                   </button>
-                    {/* <p className='font-bold text-xs uppercase'>nimbi wolfpack</p>
+                    <button onClick={() => { setConnected(false); document.querySelector('.walletBalance').style.display = 'none' }} className='btn w-full text-base text-center rounded-md'>
+                      <p className='font-["Inter",sans-serif] font-medium text-sm'>Disconnect</p>
+                    </button>
+                    <p className='font-bold text-xs uppercase'>nimbi wolfpack</p>
                      <button className='btn w-full text-base text-center rounded-md'>
                       <p className='font-["Inter",sans-serif] font-medium text-sm'>access cdc</p>
                     </button>
@@ -495,7 +496,7 @@ function Wallet() {
                     </button>
                     <button className='btn w-full text-base text-center rounded-md'>
                       <p className='font-["Inter",sans-serif] font-medium text-sm'>dust runner game</p>
-                    </button> */}
+                    </button> 
 
                   </div>
                 </div>
@@ -712,3 +713,5 @@ function Wallet() {
 }
 
 export default Wallet
+
+*/
