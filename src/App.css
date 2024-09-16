@@ -110,6 +110,11 @@ nav a.active {
   /* 150% */
 }
 
+.btn-yel:hover {
+  background: #131212;
+  color: white;
+}
+
 .btn:hover {
   background-color: #242d32;
   border: 1px solid #c4c0c8;

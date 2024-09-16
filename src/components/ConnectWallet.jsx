@@ -16,7 +16,7 @@ function ConnectWallet() {
                             </div>
                         </div>
                     </div>
-                    <Link to={"/home"} className="w-full btn px-3.5 py-2.5 bg-[#00ace6] rounded justify-center items-center gap-2.5 inline-flex">
+                    <Link to={"/wallet"} className="w-full btn px-3.5 py-2.5 bg-[#00ace6] rounded justify-center items-center gap-2.5 inline-flex">
                         <div className="w-5 h-5 relative">
                             <img className="w-5 h-5 left-0 top-0 absolute" src={flash} />
                         </div>

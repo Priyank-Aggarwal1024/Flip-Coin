@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { cryptocurrency, flash, wolf, yellowFlash } from "../assets";
-
-function Hero() {
+function Hero({ setOpenWallet }) {
     return (
         <>
+
             <div className="flex flex-col pt-2.5 gap-[45px] mt-3">
                 <div className="flex gap-[22px] w-full xl:flex-row flex-col-reverse justify-between">
                     <div className="px-5 py-3 xl:w-[709px] w-full max-w-full rounded-[16px] bg-[linear-gradient(272deg,_rgba(69,77,82,0.40)_3.39%,_rgba(101,127,141,0.32)_100%)] flex xl:gap-[49px] justify-between md:items-center md:flex-row flex-col gap-[9px]">
@@ -56,12 +56,12 @@ function Hero() {
                     <div className="w-[812px] max-w-full min-h-[162px] flex-col justify-start items-start gap-3 inline-flex">
                         <div className=""><span className="text-white text-6xl font-extrabold font-['Roboto'] uppercase leading-[54px]">Get up to </span><span className="text-[#d9cb00] text-6xl font-extrabold font-['Roboto'] uppercase leading-[54px]">1000 KAZI</span><span className="text-white text-6xl font-extrabold font-['Roboto'] uppercase leading-[54px]"> BONUS</span></div>
                         <div className=" text-[#ebeced] text-[22px] font-normal font-['Roboto'] uppercase leading-10">Flip first coin AND GET BONUS</div>
-                        <Link to={"/"} className="btn2 flex gap-2.5 xs:w-[176px] w-full">
+                        <div onClick={() => setOpenWallet(true)} className="btn2 flex gap-2.5 xs:w-[176px] w-full">
                             <img src={flash} />
                             <div className="">
                                 Connect Wallet
                             </div>
-                        </Link>
+                        </div>
                     </div>
                     <div className="grid 3xl:grid-cols-2 gap-5">
                         <div className="bg-[#2e3a41] w-full rounded-[15px] max-w-full md:h-[305.26px] py-[21px] px-[13px] md:px-8 md:py-6">

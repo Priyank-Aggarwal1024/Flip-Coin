@@ -52,6 +52,8 @@ import circle from './circle.svg'
 import coingif from './coingif.gif'
 import cat from './cat.svg'
 import wincat from './wincat.svg'
+import wallet_98 from './98_Wallet.svg'
+import walletConnect from './wallet_connect.svg'
 export {
   nimbi,
   mlogo,
@@ -106,5 +108,5 @@ export {
   circle,
   coingif,
   cat,
-  wincat
+  wincat, wallet_98, walletConnect
 };

@@ -11,14 +11,14 @@ function Navbar() {
                         <div className="links flex items-center gap-[22px]">
                             <Link to={"/"} className="h-9 px-3 py-1.5 rounded justify-center items-center gap-1 inline-flex text-center text-white text-sm font-medium font-['Inter'] leading-normal">Home</Link>
                             <Link to={"/"} className="h-9 px-3 py-1.5 rounded justify-center items-center gap-1 inline-flex text-center text-white text-sm font-medium font-['Inter'] leading-normal">FAQ</Link>
-                            <div className="h-9  px-2 py-1.5 border border-[#4e5055] justify-center items-center gap-1 xs:inline-flex hidden">
+                            <Link to={"/wallet"} className="h-9  px-2 py-1.5 border hover:border-[transparent] border-[#4e5055] justify-center items-center gap-1 xs:inline-flex hidden">
                                 <div className="w-4 h-4 relative">
                                     <img src={flash} className="w-4 h-4 left-0 top-0 absolute" />
                                 </div>
                                 <div className="px-1 justify-start items-start gap-2.5 flex">
                                     <div className="text-center text-[#ebeced] text-sm font-medium font-['Inter'] leading-normal">Connect Wallet</div>
                                 </div>
-                            </div>
+                            </Link>
                         </div>
                     </div>
                 </nav>
