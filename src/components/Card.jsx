@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { coin } from "../assets";
 
 function Card({ coinPrice }) {
@@ -12,7 +13,7 @@ function Card({ coinPrice }) {
                         <div className="text-[#e6f7fd] text-lg font-normal font-['Roboto'] uppercase leading-normal">1 flip win doubles = {coinPrice * 2} Kazi</div>
                     </div>
                 </div>
-                <div className="btn-yel">Enter</div>
+                <Link to={"/choose-flip-coin"} className="btn-yel">Enter</Link>
             </div>
         </>
     );

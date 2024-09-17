@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { cat } from "../assets";
 
 function Loose() {
@@ -13,14 +14,14 @@ function Loose() {
                     <img src={cat} alt="Cat" />
                 </div>
                 <div className="min-h-[104px] flex-col justify-start items-start gap-4 flex w-full">
-                    <div className="btn-yel w-full">
+                    <Link to={"/flip-coin"} className="btn-yel w-full">
                         Try again
-                    </div>
-                    <div className="px-3.5 py-2.5 rounded border border-white justify-center items-start gap-2.5 inline-flex w-full">
+                    </Link>
+                    <Link to={"/home"} className="px-3.5 py-2.5 rounded border border-white justify-center items-start gap-2.5 inline-flex w-full">
                         <div className="px-1 justify-start items-start gap-2.5 flex w-full">
                             <div className="text-center text-white w-full text-base font-medium font-['Inter'] leading-normal">Back to rooms</div>
                         </div>
-                    </div>
+                    </Link>
                 </div>
             </div>
         </div>
